@@ -1,1 +1,1 @@
-console.log("Hello from todo!");
+import "./style.css";
