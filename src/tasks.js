@@ -52,7 +52,7 @@ function displayTask(task) {
     }
 }
 
-function saveTasksToStorage (taskArr) {
+export function saveTasksToStorage (taskArr) {
     localStorage.setItem("tasks", JSON.stringify(taskArr));
 }
 
@@ -65,7 +65,7 @@ function getTasksFromStorage () {
     return [];
 }
 
-function getProjectTasks () {
+export function getProjectTasks () {
     return getTasksFromStorage().filter(task => task.projectId === getCurrentProject())
 }
 
@@ -96,7 +96,7 @@ function updateTask(id) {
     listTasks();
 }
 
-function editTask(id) {
+export function editTask(id) {
     const taskArr = getTasksFromStorage();
     const task = taskArr.find(task => task.id === id);
     const taskEdit = prompt("what do you need to do?", task.text);
@@ -107,13 +107,19 @@ function editTask(id) {
     }
 }
 
-function deleteTask (id) {
-    if (confirm("Are you sure you want to delete this task?")){
-        const taskArr = getTasksFromStorage();
-        const deleteIndex = taskArr.findIndex(task => task.id === id);
-        taskArr.splice(deleteIndex, 1);
-        saveTasksToStorage(taskArr);
+export function deleteTask(id, bulk = false) {
+    if (!bulk && !confirm("Are you sure you want to delete this task?")) {
+        return;
+    }
+
+    const taskArr = getTasksFromStorage();
+    const newTasks = taskArr.filter(task => task.id !== id);
+
+    if (newTasks.length !== taskArr.length) { 
+        saveTasksToStorage(newTasks);
         listTasks();
+    } else {
+        console.warn(`Task with ID ${id} not found.`);
     }
 }
 
@@ -141,6 +147,6 @@ document.addEventListener("click", (event) => {
         deleteTask(target.closest("li").getAttribute("task-id"))
     }
 });
-document.addEventListener("DOMContentLoaded", listTasks());
+
     
 

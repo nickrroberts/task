@@ -1,6 +1,4 @@
 const addProjectButton = document.getElementById("new-proj");
-// const deleteProjectButton
-const projectInfo = document.getElementById("project-info");
 const projectName = document.getElementById("project-name");
 const projects = document.getElementById("projects");
 
@@ -56,64 +54,13 @@ function getCurrentProject() {
     return localStorage.getItem("currentProject");
 }
 
-export function displayProject (project) {
+function displayProject (project) {
     if (project) {
         projectName.textContent = project.name;
     }
 }
 
-function editProject(id) {
-    const projArr = getProjects();
-    const project = projArr.find(task => task.id === id);
-    const projEdit = prompt("Project name", project.name);
-    if (projEdit !== null && projEdit.trim() !== "") {
-        project.name = projEdit;
-        saveProjectsToStorage(projArr);
-        displayProject(project);
-        listProjects(projArr);
-    }
-}
-
-function deleteProject (id) {
-    if (confirm("Are you sure you want to delete this project? You will lose all tasks associated with it.")){
-        const projArr = getProjects();
-        const deleteIndex = projArr.findIndex(project => project.id === id);
-        projArr.splice(deleteIndex, 1);
-        localStorage.setItem("currentProject", projArr[0].id);
-        saveProjectsToStorage(projArr);
-        displayProject(projArr[0]);
-        listProjects(projArr);
-    }
-}
-
-const projectsArr = getProjects();
-if (!getCurrentProject() && projectsArr.length > 0) {
-    const defaultProject = projectsArr[0];
-    localStorage.setItem("currentProject", defaultProject.id);
-    projectName.textContent = defaultProject.name; // Set default project title
-} else if (getCurrentProject()) {
-    const savedProject = getProjectFromStorage(getCurrentProject());
-    if (savedProject) {
-        projectName.textContent = savedProject.name;
-    }
-}
-
-addProjectButton.addEventListener('click', () => {
-    createProject();
-})
-
-projectInfo.addEventListener("click", (event) => {
-    const target = event.target;
-    if (target.classList.contains("edit-project")) {
-        editProject(getCurrentProject());
-    }
-    if (target.classList.contains("delete-project")) {
-        deleteProject(getCurrentProject());
-    }
-});
 
 
-listProjects(getProjects());
 
-
-export {projectName, addProjectButton, projects, Project, createProject, getProjects, listProjects, getProjectFromStorage, getCurrentProject};
+export {projectName, addProjectButton, projects, Project, createProject, getProjects, listProjects, getProjectFromStorage, saveProjectsToStorage, getCurrentProject, displayProject};
