@@ -53,10 +53,45 @@ nav li:hover {
     background-color: #E0DFD8;
 }
 
+header {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
 
 #container {
     padding: 3rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+section h3 {
+    margin-top: 3rem;
+    color:#858585;
+}
+
+section ul {
+    list-style: none;
+}
+
+section li {
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+section li img, header img {
+    max-height: 1rem;
+    display: none;
+}
+
+section li img:first-of-type{
+    margin-left: 2rem;
+}
+
+section li:hover img, header:hover img {
+    display: inline;
 }
