@@ -37,37 +37,29 @@ function createTask () {
 
 function displayTask(task) {
     const taskItem = document.createElement("li");
-    taskItem.setAttribute("task-id", task.id);
-    taskItem.classList.toggle("completed-task", task.completed);
-
     const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = task.completed;
-    checkbox.addEventListener("change", () => updateTask(task.id));
-
-    const label = document.createElement("label");
-    label.htmlFor = task.id;
-    label.textContent = task.text;
-
+    const label = document.createElement("label")
     const edit = document.createElement("img");
+    const trash = document.createElement("img");
+    taskItem.setAttribute("task-id", task.id);
+    checkbox.type = "checkbox";
+    label.htmlFor = checkbox.getAttribute("task-id")
+    label.textContent = task.text;
     edit.setAttribute("src", editIcon);
     edit.classList.add("edit-task");
-    edit.addEventListener("click", () => editTask(task.id));
-
-    const trash = document.createElement("img");
     trash.setAttribute("src", trashIcon);
     trash.classList.add("delete-task");
-    trash.addEventListener("click", () => deleteTask(task.id));
-
     taskItem.appendChild(checkbox);
     taskItem.appendChild(label);
     taskItem.appendChild(edit);
     taskItem.appendChild(trash);
-
-    if (task.completed) {
-        completedTaskList.prepend(taskItem);
-    } else {
+    if (task.completed === false) {
         taskList.appendChild(taskItem);
+    }
+    if (task.completed === true) {
+        taskItem.classList.add("completed-task");
+        checkbox.setAttribute("checked", "checked");
+        completedTaskList.prepend(taskItem);
     }
 }
 
