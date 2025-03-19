@@ -19,40 +19,59 @@ function createTask () {
     if (taskText !== null) {
         const task = new Task(taskText, getCurrentProject());
         const tasks = getTasksFromStorage();
+        const emptyMessage = document.querySelector(".empty-tasks");
+        const completed = document.querySelector(".completed");
         tasks.push(task);
         saveTasksToStorage(tasks);
         displayTask(task);
+
+        if (emptyMessage) {
+            emptyMessage.remove();
+        }
+
+        if (completed) {
+            completed.remove();
+        }       
     }
 }
 
 function displayTask(task) {
     const taskItem = document.createElement("li");
-    const checkbox = document.createElement("input");
-    const label = document.createElement("label")
-    const edit = document.createElement("img");
-    const trash = document.createElement("img");
     taskItem.setAttribute("task-id", task.id);
+    taskItem.classList.toggle("completed-task", task.completed);
+
+    const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    label.htmlFor = checkbox.getAttribute("task-id")
+    checkbox.checked = task.completed;
+    checkbox.addEventListener("change", () => updateTask(task.id));
+
+    const label = document.createElement("label");
+    label.htmlFor = task.id;
     label.textContent = task.text;
+
+    const edit = document.createElement("img");
     edit.setAttribute("src", editIcon);
     edit.classList.add("edit-task");
+    edit.addEventListener("click", () => editTask(task.id));
+
+    const trash = document.createElement("img");
     trash.setAttribute("src", trashIcon);
     trash.classList.add("delete-task");
+    trash.addEventListener("click", () => deleteTask(task.id));
+
     taskItem.appendChild(checkbox);
     taskItem.appendChild(label);
     taskItem.appendChild(edit);
     taskItem.appendChild(trash);
-    if (task.completed === false) {
-        taskList.appendChild(taskItem)
-    }
-    if (task.completed === true) {
-        checkbox.setAttribute("checked", "checked")
-        completedTaskList.prepend(taskItem)
+
+    if (task.completed) {
+        completedTaskList.prepend(taskItem);
+    } else {
+        taskList.appendChild(taskItem);
     }
 }
 
-export function saveTasksToStorage (taskArr) {
+function saveTasksToStorage (taskArr) {
     localStorage.setItem("tasks", JSON.stringify(taskArr));
 }
 
@@ -65,38 +84,68 @@ function getTasksFromStorage () {
     return [];
 }
 
-export function getProjectTasks () {
+function getProjectTasks () {
     return getTasksFromStorage().filter(task => task.projectId === getCurrentProject())
 }
 
-export function listTasks () {
+function listTasks() {
     taskList.innerHTML = "";
     completedTaskList.innerHTML = "";
+
     const taskArr = getProjectTasks();
-    for (let task of taskArr) {
-        displayTask(task);
+    const completedListHeader = document.querySelector(".completed-list-header");
+
+    if (taskArr.length === 0) {
+        if (completedListHeader) completedListHeader.style.display = "none";
+        
+        const emptyMessage = document.createElement("p");
+        emptyMessage.classList.add("empty-tasks");
+        emptyMessage.textContent = "Looks like we don't have any tasks here yet.";
+        taskList.appendChild(emptyMessage);
+        return;
+    }
+
+    taskArr.forEach(displayTask);
+
+    if (taskArr.every(task => task.completed)) {
+        const completedMessage = document.createElement("p");
+        completedMessage.classList.add("completed");
+        completedMessage.textContent = "All done! 🎉";
+        taskList.appendChild(completedMessage);
+    }
+    if (taskArr.some(task => task.completed)) {
+        if (completedListHeader) completedListHeader.style.display = "block";
+    } else {
+        if (completedListHeader) completedListHeader.style.display = "none";
     }
 }
+    
 
 function updateTask(id) {
     const taskArr = getTasksFromStorage();
     const task = taskArr.find(task => task.id === id);
 
     if (task) {
-        if (task.completed === true) {
-            task.completed = false; 
-        }
-        else if (task.completed === false) {
-            task.completed = true;
-        }
+        task.completed = !task.completed; // Toggle completion
     }
 
-    console.log(task);
     saveTasksToStorage(taskArr);
-    listTasks();
+
+    const taskItem = document.querySelector(`li[task-id="${id}"]`);
+        if (taskItem) {
+            taskItem.classList.toggle("completed-task", task.completed);
+        }
+
+    if (task.completed) {
+        setTimeout(() => {
+            listTasks();
+        }, 1000); 
+    } else {
+        listTasks(); 
+    }
 }
 
-export function editTask(id) {
+function editTask(id) {
     const taskArr = getTasksFromStorage();
     const task = taskArr.find(task => task.id === id);
     const taskEdit = prompt("what do you need to do?", task.text);
@@ -107,7 +156,7 @@ export function editTask(id) {
     }
 }
 
-export function deleteTask(id, bulk = false) {
+function deleteTask(id, bulk = false) {
     if (!bulk && !confirm("Are you sure you want to delete this task?")) {
         return;
     }
@@ -123,30 +172,7 @@ export function deleteTask(id, bulk = false) {
     }
 }
 
-taskArea.addEventListener("click", (event) => {
-    const target = event.target;
 
-    if (target.tagName === "INPUT" && target.type === "checkbox") {
-        const taskItem = target.closest("li");
-        if (taskItem) {
-            updateTask(taskItem.getAttribute("task-id"));
-        }
-    }
-});
-
-taskBtn.addEventListener("click", () => {
-    createTask();
-})
-
-document.addEventListener("click", (event) => {
-    const target = event.target;
-    if (target.classList.contains("edit-task")) {
-        editTask(target.closest("li").getAttribute("task-id"));
-    }
-    if (target.classList.contains("delete-task")) {
-        deleteTask(target.closest("li").getAttribute("task-id"))
-    }
-});
-
+export { taskArea, taskBtn, getProjectTasks, listTasks, createTask, editTask, updateTask, deleteTask}
     
 

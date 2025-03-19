@@ -1,6 +1,7 @@
 const addProjectButton = document.getElementById("new-proj");
 const projectName = document.getElementById("project-name");
 const projects = document.getElementById("projects");
+const projectInfo = document.getElementById("project-info");
 
 
 function Project (name) {
@@ -60,7 +61,38 @@ function displayProject (project) {
     }
 }
 
+function editProject(id) {
+    const projArr = getProjects();
+    const project = projArr.find(project => project.id === id);
+    const projEdit = prompt("Project name", project.name);
+    if (projEdit !== null && projEdit.trim() !== "") {
+        project.name = projEdit;
+        saveProjectsToStorage(projArr);
+        displayProject(project);
+        listProjects(projArr);
+    }
+}
+
+function deleteProject (id) {
+    if (confirm("Are you sure you want to delete this project? You will lose all tasks associated with it.")){
+        const projArr = getProjects();
+        const deleteIndex = projArr.findIndex(project => project.id === id);
+        projArr.splice(deleteIndex, 1);
+        saveProjectsToStorage(projArr);
+        if (projArr.length > 0) {
+            localStorage.setItem("currentProject", projArr[0].id);
+            displayProject(projArr[0]);
+        }
+        if (projArr.length == 0) {
+            projectName.textContent = "";
+            localStorage.setItem("currentProject", "none")
+        }
+
+        listProjects(projArr);
+    }
+}
 
 
 
-export {projectName, addProjectButton, projects, Project, createProject, getProjects, listProjects, getProjectFromStorage, saveProjectsToStorage, getCurrentProject, displayProject};
+
+export {projectName, addProjectButton, projects, projectInfo, createProject, getProjects, listProjects, getProjectFromStorage, getCurrentProject, displayProject, editProject, deleteProject};
