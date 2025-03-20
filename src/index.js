@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (nav.classList.contains("nav-shrink")) {
                 navToggle.src = navClosed;
                 main.style.gridTemplate = "1fr / 3rem 1fr"; 
-                nav.style.width = "2rem";
+                nav.style.width = "3rem";
                 nav.style.padding = "1rem";
             } else {
                 navToggle.src = navOpen;

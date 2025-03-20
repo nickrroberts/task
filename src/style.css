@@ -60,7 +60,7 @@ nav ul {
 }
 
 .nav-shrink {
-    width: 1rem; 
+    width: 3rem; 
     min-width: 1rem;
     display: flex;
     flex-direction: column;
