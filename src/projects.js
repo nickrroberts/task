@@ -1,3 +1,5 @@
+import createIcon from "./assets/create.svg";
+
 const addProjectButton = document.getElementById("new-proj");
 const projectName = document.getElementById("project-name");
 const projects = document.getElementById("projects");
@@ -11,11 +13,46 @@ function Project (name) {
     this.name = name;
 }
 
-function createProject () {
-    const name = prompt("Project name");
-    if (name !== null && name.trim() !== "") {
-        const project = new Project(name);
+function createProject() {
 
+    const projectInput = document.createElement("input");
+    projectInput.type = "text";
+    projectInput.placeholder = "Enter project title";
+    projectInput.classList.add("project-input");
+    projectInput.setAttribute("type", "text");
+
+    const enterBtn = document.createElement("img");
+    enterBtn.src = createIcon;
+    enterBtn.setAttribute("id", "enter-btn");
+
+    const container = projectName.parentNode;
+    container.insertBefore(projectInput, projectName);
+    container.insertBefore(enterBtn, projectName);
+
+    const editIconEl = document.querySelector(".edit-project");
+    const deleteIconEl = document.querySelector(".delete-project");
+    if (editIconEl) {
+        editIconEl.style.display = "none";
+    }
+    if (deleteIconEl) {
+        deleteIconEl.style.display = "none";
+    }
+
+    projectInput.focus();
+
+    let finished = false; 
+
+    function finishCreatingProject() {
+        if (finished) return;
+        finished = true;
+
+        let projectTitle = projectInput.value.trim();
+        if (projectTitle === "") {
+            projectTitle = "My project";
+        }
+        
+        const project = new Project(projectTitle);
+        
         const projectItem = document.createElement("li");
         projectItem.textContent = project.name;
         projectItem.setAttribute("project-id", project.id);
@@ -24,14 +61,30 @@ function createProject () {
         const projArr = getProjects();
         projArr.push(project);
         saveProjectsToStorage(projArr);
-
         listProjects(projArr);
-
         localStorage.setItem("currentProject", project.id);
-
         displayProject(project);
 
-    }  
+        projectInput.remove();
+        enterBtn.remove();
+
+        if (editIconEl) {
+            editIconEl.style.display = "";
+        }
+        if (deleteIconEl) {
+            deleteIconEl.style.display = "";
+        }
+    }
+
+    enterBtn.addEventListener("click", finishCreatingProject);
+
+    projectInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            finishCreatingProject();
+        }
+    });
+
+    projectInput.addEventListener("blur", finishCreatingProject);
 }
 
 function getProjects() {
@@ -74,35 +127,73 @@ function displayProject (project) {
 function editProject(id) {
     const projArr = getProjects();
     const project = projArr.find(project => project.id === id);
-    const projEdit = prompt("Project name", project.name);
-    if (projEdit !== null && projEdit.trim() !== "") {
-        project.name = projEdit;
+    if (!project) return;
+
+    const projectNameElement = document.getElementById("project-name");
+    
+    // Create an input field with the current project title
+    const editInput = document.createElement("input");
+    editInput.type = "text";
+    editInput.value = project.name;
+    editInput.classList.add("project-edit-input");
+
+    // Hide the h1 and insert the input field
+    projectNameElement.style.display = "none";
+    projectNameElement.parentNode.insertBefore(editInput, projectNameElement);
+    editInput.focus();
+
+    let finished = false;
+
+    function finishEditing() {
+        if (finished) return;
+        finished = true;
+
+        let newTitle = editInput.value.trim();
+        if (newTitle === "") {
+            newTitle = "My project";
+        }
+        project.name = newTitle;
         saveProjectsToStorage(projArr);
         displayProject(project);
         listProjects(projArr);
+        editInput.remove();
+        projectNameElement.style.display = "block";
     }
+
+    // Finish editing on Enter key
+    editInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            finishEditing();
+        }
+    });
+    // And on blur as well
+    editInput.addEventListener("blur", finishEditing);
 }
 
 function deleteProject(id) {
-    if (confirm("Are you sure you want to delete this project? You will lose all tasks associated with it.")) {
-        const projArr = getProjects();
-        const deleteIndex = projArr.findIndex(project => project.id === id);
-        
-        if (deleteIndex !== -1) {
-            projArr.splice(deleteIndex, 1);
-            saveProjectsToStorage(projArr);
-        }
-
-        if (projArr.length > 0) {
-            localStorage.setItem("currentProject", projArr[0].id);
-            displayProject(projArr[0]);
-        } else {
-            localStorage.setItem("currentProject", "none");
-        }
-
-        // Update project list in the UI
-        listProjects(projArr);
+    if (!confirm("Are you sure you want to delete this project? You will lose all tasks associated with it.")) {
+        return false;
     }
+    
+    const projArr = getProjects();
+    const deleteIndex = projArr.findIndex(project => project.id === id);
+    
+    if (deleteIndex !== -1) {
+        projArr.splice(deleteIndex, 1);
+        saveProjectsToStorage(projArr);
+    }
+
+    if (projArr.length > 0) {
+        localStorage.setItem("currentProject", projArr[0].id);
+        displayProject(projArr[0]);
+    } else {
+        localStorage.setItem("currentProject", "none");
+    }
+
+    listProjects(projArr);
+
+    return true;
 }
 
 

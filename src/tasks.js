@@ -1,6 +1,7 @@
 import { getCurrentProject, getProjects } from "./projects";
 import editIcon from "./assets/edit.svg";
 import trashIcon from "./assets/trash.svg";
+import createIcon from "./assets/create.svg";
 
 const taskArea = document.getElementById("task-area");
 const taskList = document.getElementById("task-list");
@@ -15,24 +16,69 @@ function Task (text, projectId) {
 }
 
 function createTask () {
-    const taskText = prompt("What do you need to do?");
-    if (taskText !== null) {
-        const task = new Task(taskText, getCurrentProject());
-        const tasks = getTasksFromStorage();
-        const emptyMessage = document.querySelector(".empty-tasks");
-        const completed = document.querySelector(".completed");
-        tasks.push(task);
-        saveTasksToStorage(tasks);
-        displayTask(task);
+    const newTask = document.createElement("li");
+    const newTaskInput = document.createElement("input");
+    const enterBtn = document.createElement("img");
 
-        if (emptyMessage) {
-            emptyMessage.remove();
+    enterBtn.src = createIcon;
+    enterBtn.setAttribute("id", "enter-btn");
+
+    newTask.appendChild(newTaskInput);
+    newTask.appendChild(enterBtn);
+    taskList.appendChild(newTask);
+
+    newTaskInput.setAttribute("type", "text")
+    newTaskInput.focus();
+
+    let taskRemoved = false;
+
+    enterBtn.addEventListener("click", addTask);
+
+
+    newTaskInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault(); 
+            addTask();
         }
+    });
 
-        if (completed) {
-            completed.remove();
-        }       
+    newTaskInput.addEventListener("blur", () => {
+        if (newTaskInput.value.trim() === "" && !taskRemoved && newTask.parentNode) {
+            taskRemoved = true;
+            newTask.remove();
+        }
+    });
+
+
+    function addTask() {
+        const taskText = newTaskInput.value;
+        if (taskText !== "") {
+            const task = new Task(taskText, getCurrentProject());
+            const tasks = getTasksFromStorage();
+            const emptyMessage = document.querySelector(".empty-tasks");
+            const completed = document.querySelector(".completed");
+
+            tasks.push(task);
+            saveTasksToStorage(tasks);
+            newTask.remove();
+            displayTask(task);
+
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+
+            if (completed) {
+                completed.remove();
+            }
+        } else { 
+            if (!taskRemoved && newTask.parentNode) {
+                taskRemoved = true;
+                newTask.remove();
+            } 
+        }
     }
+
+    
 }
 
 function displayTask(task) {
@@ -140,12 +186,59 @@ function updateTask(id) {
 function editTask(id) {
     const taskArr = getTasksFromStorage();
     const task = taskArr.find(task => task.id === id);
-    const taskEdit = prompt("what do you need to do?", task.text);
-    if (taskEdit !== null && taskEdit.trim() !== "") {
-        task.text = taskEdit;
-        saveTasksToStorage(taskArr);
+    if (!task) return;  
+
+    const taskItem = document.querySelector(`li[task-id="${id}"]`);
+    if (!taskItem) return;
+
+    const label = taskItem.querySelector("label");
+    if (!label) return;
+
+    label.style.display = "none";
+    const editBtn = taskItem.querySelector(".edit-task");
+    const deleteBtn = taskItem.querySelector(".delete-task");
+    if (editBtn) editBtn.style.display = "none";
+    if (deleteBtn) deleteBtn.style.display = "none";
+
+    const enterBtn = document.createElement("img");
+    enterBtn.src = createIcon;
+    enterBtn.setAttribute("id", "enter-btn");
+
+    const editInput = document.createElement("input");
+   
+    editInput.type = "text";
+    editInput.value = task.text;
+    editInput.classList.add("edit-input");
+
+
+    taskItem.insertBefore(editInput, label);
+
+    editInput.focus();
+
+    function finishEditing() {
+        const newText = editInput.value.trim();
+        if (newText !== "") {
+            task.text = newText;
+            saveTasksToStorage(taskArr);
+        } else {
+            editInput.remove();
+        }
+        label.style.display = "block";
+        if (editBtn) editBtn.style.display = "inline-block";
+        if (deleteBtn) deleteBtn.style.display = "inline-block";
         listTasks();
     }
+
+    editInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            finishEditing();
+        }
+    });
+
+    editInput.addEventListener("blur", () => {
+        finishEditing();
+    });
 }
 
 function deleteTask(id, bulk = false) {

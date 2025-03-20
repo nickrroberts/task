@@ -4,13 +4,14 @@ import trashIcon from "./assets/trash.svg";
 import {projectName, addProjectButton, projects, projectInfo, createProject, getProjects, listProjects, getProjectFromStorage, getCurrentProject, displayProject, editProject, deleteProject} from "./projects.js";
 import {taskArea, taskBtn, getProjectTasks, listTasks, createTask, editTask, updateTask, deleteTask} from "./tasks.js";
 
-//Listeners
+const nav = document.querySelector("nav");
+const navToggle = document.getElementById("nav-toggle");
+
+//on DOM load
 
 document.addEventListener("DOMContentLoaded", function () {
     const projectsArr = getProjects();
     const main = document.querySelector("main");
-    const nav = document.querySelector("nav");
-    const navToggle = document.getElementById("nav-toggle");
     const container = document.getElementById("container");
     const projectList = document.getElementById("projects");
     
@@ -33,12 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
     listProjects(getProjects());
     listTasks();
 
-    // Check if viewport is mobile
-    function isMobile() {
-        return window.matchMedia("(max-width: 768px)").matches;
-    }
-
-    // Function to update the nav toggle icon based on screen size
     function updateNavToggleIcon() {
         if (isMobile()) {
             navToggle.src = "./assets/mobile-open.svg";
@@ -47,10 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Run the check on window resize
     window.addEventListener("resize", updateNavToggleIcon);
-
-    // Ensure the correct initial icon is displayed on page load
     updateNavToggleIcon();
 
     navToggle.addEventListener("click", () => {
@@ -82,12 +74,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Close mobile navbar when a project is tapped
     projectList.addEventListener("click", () => {
-        if (isMobile() && nav.classList.contains("nav-expanded")) {
-            nav.classList.remove("nav-expanded");
-            navToggle.src = "./assets/mobile-open.svg";
-        }
+        shutNavOnMobile();
     });
 }); 
+
+// listeners
 
 projects.addEventListener("click", (event) => {
     const target = event.target;
@@ -100,7 +91,12 @@ projects.addEventListener("click", (event) => {
 })
 
 addProjectButton.addEventListener('click', () => {
+    projectName.textContent = "";
+    localStorage.setItem("currentProject", "none");
+    shutNavOnMobile();
+    listTasks();
     createProject();
+    
 });
 
 projectInfo.addEventListener("click", (event) => {
@@ -111,18 +107,19 @@ projectInfo.addEventListener("click", (event) => {
         editProject(getCurrentProject());
     }
     if (target.classList.contains("delete-project")) {
-        deleteProject(getCurrentProject());
-        if ( getCurrentProject() !== "none") {
-            listTasks();
-        }
-
-        if ( getCurrentProject() == "none") {
-            clearState();
-            console.log("No current project")
-        }
+        const deletionConfirmed = deleteProject(getCurrentProject());
         
-        for (let task of deletableTasks) {
-            deleteTask(task.id, true);
+        if (deletionConfirmed) {
+            if (getCurrentProject() !== "none") {
+                listTasks();
+            } else if (getCurrentProject() === "none") {
+                clearState();
+                console.log("No current project");
+            }
+    
+            for (let task of deletableTasks) {
+                deleteTask(task.id, true);
+            }
         }
     }
 });
@@ -140,7 +137,8 @@ taskArea.addEventListener("click", (event) => {
 
 taskBtn.addEventListener("click", () => {
     createTask();
-})
+});
+
 
 document.addEventListener("click", (event) => {
     const target = event.target;
@@ -151,6 +149,19 @@ document.addEventListener("click", (event) => {
         deleteTask(target.closest("li").getAttribute("task-id"))
     }
 });
+
+// helpers
+
+function isMobile() {
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function shutNavOnMobile () {
+    if (isMobile() && nav.classList.contains("nav-expanded")) {
+        nav.classList.remove("nav-expanded");
+        navToggle.src = "./assets/mobile-open.svg";
+    }
+}
 
 function clearState () {
     const container = document.getElementById("container");
@@ -180,22 +191,16 @@ function clearState () {
     emptyStateDiv.appendChild(emptyStateCreateProjectBtn);
 
     emptyStateCreateProjectBtn.addEventListener("click", () => {
-        const previousProject = getCurrentProject();
-        createProject();
-        
-        // Check if a new project was actually created
-        const newProject = getProjectFromStorage(getCurrentProject());
-        
-        if (!newProject || getCurrentProject() === previousProject) {
-            // If no new project was created, reapply the empty state
-            return clearState();
-        }
+        emptyStateDiv.remove();
 
-        // Otherwise, restore the UI
+        createProject();
+
         nav.style.display = "flex";
+        projectName.style.display = "block";
+        taskArea.style.display = "block";
+        taskBtn.style.display = "block";
+
         createInitialProject();
-        emptyMessage.remove();
-        emptyStateCreateProjectBtn.remove();
         });
     }
 
