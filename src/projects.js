@@ -191,15 +191,6 @@ function deleteProject(id) {
 
     listProjects(projArr);
 
-    const editIconEl = document.querySelector('.edit-project');
-    const deleteIconEl = document.querySelector('.delete-project');
-    if (editIconEl) {
-        editIconEl.remove();
-    }
-    if (deleteIconEl) {
-        deleteIconEl.remove();
-    }
-
     return true;
 }
 
