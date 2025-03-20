@@ -1,4 +1,8 @@
 import "./style.css";
+import navOpen from "./assets/menu.svg";
+import navClosed from "./assets/expand.svg";
+import mobileOpen from "./assets/mobile-open.svg";
+import mobileClosed from "./assets/mobile-close.svg";
 import editIcon from "./assets/edit.svg";
 import trashIcon from "./assets/trash.svg";
 import {projectName, addProjectButton, projects, projectInfo, createProject, getProjects, listProjects, getProjectFromStorage, getCurrentProject, displayProject, editProject, deleteProject} from "./projects.js";
@@ -28,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             projectName.textContent = savedProject.name;
         }
     }
-
+    document.getElementById("nav-toggle").src = navOpen;
     document.querySelector(".edit-project").src = editIcon;
     document.querySelector(".delete-project").src = trashIcon;
     listProjects(getProjects());
@@ -36,9 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateNavToggleIcon() {
         if (isMobile()) {
-            navToggle.src = "./assets/mobile-open.svg";
+            navToggle.src = mobileOpen;
         } else {
-            navToggle.src = "./assets/menu.svg";
+            navToggle.src = navOpen;
         }
     }
 
@@ -50,20 +54,20 @@ document.addEventListener("DOMContentLoaded", function () {
             nav.classList.toggle("nav-expanded");
 
             if (nav.classList.contains("nav-expanded")) {
-                navToggle.src = "./assets/mobile-close.svg";
+                navToggle.src = mobileClosed;
             } else {
-                navToggle.src = "./assets/mobile-open.svg";
+                navToggle.src = mobileOpen;
             }
         } else {
             nav.classList.toggle("nav-shrink");
 
             if (nav.classList.contains("nav-shrink")) {
-                navToggle.src = "./assets/expand.svg";
+                navToggle.src = navClosed;
                 main.style.gridTemplate = "1fr / 3rem 1fr"; 
                 nav.style.width = "2rem";
                 nav.style.padding = "1rem";
             } else {
-                navToggle.src = "./assets/menu.svg";
+                navToggle.src = navOpen;
                 main.style.gridTemplate = ""; 
                 container.style.padding = ""; 
                 nav.style.width = ""; 
