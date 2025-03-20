@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     margin: 0;
@@ -56,19 +60,19 @@ nav ul {
 }
 
 .nav-shrink {
-    width: 1rem; /* Keeps navbar small */
+    width: 1rem; 
     min-width: 1rem;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Aligns items to the left */
-    justify-content: flex-start; /* Ensures content starts at the top */
+    align-items: flex-start; 
+    justify-content: flex-start; 
     position: relative;
 }
 
 .nav-shrink #nav-toggle {
     position: absolute;
-    top: 3rem; /* Keeps it near the top */
-    left: 0.5rem; /* Ensures it's still positioned inside the navbar */
+    top: 3rem; 
+    left: 0.5rem; 
 }
 
 .nav-shrink .nav-header h1,
@@ -315,7 +319,7 @@ input[type="checkbox"] {
 
     .nav-expanded .new-btn {
         display: block;
-        font-size: 1rem;
+        font-size: 0.75rem;
         padding: 1rem;
     }
 
@@ -341,15 +345,23 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 480px) {
+    html {
+        font-size: 16px;
+    }
+
+    #container input[type="text"] {
+        font-size: 16px;
+        height: 2rem;
+        width: 15rem;
+    }
+
+    #new-proj, #new-task {
+        font-size: 1rem;
+    }
+
     .animated-gradient-btn {
         width: 100%; /* Full width on mobile */
         font-size: 0.85rem;
         padding: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    html {
-        font-size: 12px;
     }
 }
