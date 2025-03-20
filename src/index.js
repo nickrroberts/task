@@ -163,14 +163,16 @@ function isMobile() {
 function shutNavOnMobile () {
     if (isMobile() && nav.classList.contains("nav-expanded")) {
         nav.classList.remove("nav-expanded");
-        navToggle.src = "./assets/mobile-open.svg";
+        navToggle.src = mobileOpen;
     }
 }
 
 function clearState () {
     const container = document.getElementById("container");
     const emptyStateDiv = document.createElement("div");
-    const emptyMessage = document.createElement("h3");
+    const emptyMessage1 = document.createElement("h3");
+    const emptyMessageSpan = document.createElement("span");
+    const emptyMessage2 = document.createElement("p")
     const emptyStateCreateProjectBtn = document.createElement("button");
     const nav = document.querySelector("nav");
 
@@ -178,8 +180,12 @@ function clearState () {
 
     emptyStateDiv.classList.add("empty-state-div");
 
-    emptyMessage.classList.add("empty-state");
-    emptyMessage.textContent = "Welcome to Task. We don't have any projects! Let's make one.";
+    emptyMessage1.classList.add("empty-state");
+    emptyMessage1.textContent = "Welcome to ";
+    
+    emptyMessageSpan.textContent = "Task";
+    
+    emptyMessage2.textContent = "We don't have any projects! Let's make one.";
 
     emptyStateCreateProjectBtn.classList.add("new-btn", "animated-gradient-btn");
     emptyStateCreateProjectBtn.setAttribute("id", "empty-proj-btn");
@@ -191,7 +197,9 @@ function clearState () {
     nav.style.display = "none";
 
     container.appendChild(emptyStateDiv)
-    emptyStateDiv.appendChild(emptyMessage);
+    emptyStateDiv.appendChild(emptyMessage1);
+    emptyMessage1.appendChild(emptyMessageSpan);
+    emptyStateDiv.appendChild(emptyMessage2);
     emptyStateDiv.appendChild(emptyStateCreateProjectBtn);
 
     emptyStateCreateProjectBtn.addEventListener("click", () => {

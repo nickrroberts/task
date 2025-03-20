@@ -5,8 +5,6 @@ const projectName = document.getElementById("project-name");
 const projects = document.getElementById("projects");
 const projectInfo = document.getElementById("project-info");
 
-
-
 function Project (name) {
     this.id = crypto.randomUUID();
     this.description = "";
@@ -193,10 +191,16 @@ function deleteProject(id) {
 
     listProjects(projArr);
 
+    const editIconEl = document.querySelector('.edit-project');
+    const deleteIconEl = document.querySelector('.delete-project');
+    if (editIconEl) {
+        editIconEl.remove();
+    }
+    if (deleteIconEl) {
+        deleteIconEl.remove();
+    }
+
     return true;
 }
-
-
-
 
 export {projectName, addProjectButton, projects, projectInfo, createProject, getProjects, listProjects, getProjectFromStorage, getCurrentProject, displayProject, editProject, deleteProject};

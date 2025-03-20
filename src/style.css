@@ -225,6 +225,14 @@ input[type="checkbox"] {
     margin-top: 1rem;
 }
 
+.empty-state {
+    font-size: 2rem;
+}
+
+.empty-state-div p {
+    padding-top: 1.5rem;
+}
+
 .animated-gradient-btn {
     background: linear-gradient(90deg, #ff7e5f, #feb47b, #ff7e5f); /* Define gradient */
     background-size: 200% auto; /* Expand the gradient to animate */
@@ -236,6 +244,7 @@ input[type="checkbox"] {
     border-radius: 5px;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
+    animation-delay: -1.5s;
     animation: gradientMove 3s infinite linear;
     width: auto;
 }
