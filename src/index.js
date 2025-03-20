@@ -191,6 +191,8 @@ function clearState () {
     emptyStateCreateProjectBtn.setAttribute("id", "empty-proj-btn");
     emptyStateCreateProjectBtn.textContent = "Create project";
 
+    projectName.textContent = "";
+
     projectName.style.display = "none";
     taskArea.style.display = "none";
     taskBtn.style.display = "none";
