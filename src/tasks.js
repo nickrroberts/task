@@ -1,4 +1,4 @@
-import { getCurrentProject } from "./projects";
+import { getCurrentProject, getProjects } from "./projects";
 import editIcon from "./assets/edit.svg";
 import trashIcon from "./assets/trash.svg";
 
@@ -87,19 +87,19 @@ function listTasks() {
     const taskArr = getProjectTasks();
     const completedListHeader = document.querySelector(".completed-list-header");
 
-    if (taskArr.length === 0) {
+    if (taskArr.length === 0 && getProjects().length > 0) {
         if (completedListHeader) completedListHeader.style.display = "none";
         
         const emptyMessage = document.createElement("p");
         emptyMessage.classList.add("empty-tasks");
-        emptyMessage.textContent = "Looks like we don't have any tasks here yet.";
+        emptyMessage.textContent = "Looks like we don't have any tasks here yet. Add one by clicking below.";
         taskList.appendChild(emptyMessage);
         return;
     }
 
     taskArr.forEach(displayTask);
 
-    if (taskArr.every(task => task.completed)) {
+    if (taskArr.every(task => task.completed) && getProjects().length > 0) {
         const completedMessage = document.createElement("p");
         completedMessage.classList.add("completed");
         completedMessage.textContent = "All done! 🎉";

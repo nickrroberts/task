@@ -4,6 +4,7 @@ const projects = document.getElementById("projects");
 const projectInfo = document.getElementById("project-info");
 
 
+
 function Project (name) {
     this.id = crypto.randomUUID();
     this.description = "";
@@ -12,15 +13,24 @@ function Project (name) {
 
 function createProject () {
     const name = prompt("Project name");
-    if (name !== null) {
+    if (name !== null && name.trim() !== "") {
         const project = new Project(name);
+
         const projectItem = document.createElement("li");
         projectItem.textContent = project.name;
         projectItem.setAttribute("project-id", project.id);
         projects.appendChild(projectItem);
+
         const projArr = getProjects();
         projArr.push(project);
-        localStorage.setItem("projects", JSON.stringify(projArr));
+        saveProjectsToStorage(projArr);
+
+        listProjects(projArr);
+
+        localStorage.setItem("currentProject", project.id);
+
+        displayProject(project);
+
     }  
 }
 
@@ -73,21 +83,24 @@ function editProject(id) {
     }
 }
 
-function deleteProject (id) {
-    if (confirm("Are you sure you want to delete this project? You will lose all tasks associated with it.")){
+function deleteProject(id) {
+    if (confirm("Are you sure you want to delete this project? You will lose all tasks associated with it.")) {
         const projArr = getProjects();
         const deleteIndex = projArr.findIndex(project => project.id === id);
-        projArr.splice(deleteIndex, 1);
-        saveProjectsToStorage(projArr);
+        
+        if (deleteIndex !== -1) {
+            projArr.splice(deleteIndex, 1);
+            saveProjectsToStorage(projArr);
+        }
+
         if (projArr.length > 0) {
             localStorage.setItem("currentProject", projArr[0].id);
             displayProject(projArr[0]);
-        }
-        if (projArr.length == 0) {
-            projectName.textContent = "";
-            localStorage.setItem("currentProject", "none")
+        } else {
+            localStorage.setItem("currentProject", "none");
         }
 
+        // Update project list in the UI
         listProjects(projArr);
     }
 }
